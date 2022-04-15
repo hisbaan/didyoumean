@@ -13,7 +13,7 @@ Check out the [Releases page](https://github.com/hisbaan/didyoumean/releases) fo
 Run the following command to build `dym` from source and install it in your home directory. Ensure that you have `$CARGO_HOME/bin/` in your path.
 
 ```sh
-cargo install --locked dym
+cargo install --git https://github.com/hisbaan/didyoumean
 ```
 
 ## Developer Installation
