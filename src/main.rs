@@ -8,7 +8,7 @@ const WORDS: &str = include_str!("words.txt");
 #[clap(author = "Hisbaan Noorani", version = "0.1.0", about = "Did You Mean: A cli spell checking program", long_about = None)]
 struct Cli {
     search_term: String,
-    #[clap(short = 'n', long = "name", default_value_t = 5)]
+    #[clap(short = 'n', long = "number", default_value_t = 5)]
     number: usize,
     #[clap(short = 'v', long = "verbose")]
     verbose: bool,
