@@ -4,6 +4,7 @@
 <p align="center">
     <a href="docs/LICENSE"> <img src="https://img.shields.io/aur/license/didyoumean-git?color=1793d1&style=for-the-badge" /></a>
     <a href="https://aur.archlinux.org/packages/didyoumean-git/"> <img src="https://img.shields.io/aur/version/didyoumean-git?color=1793d1&label=didyoumean-git&logo=arch-linux&style=for-the-badge" /></a>
+    <a href="https://lib.rs/crates/didyoumean"> <img src="https://img.shields.io/crates/v/didyoumean?color=red&label=crates.io/lib.rs&logo=Rust&style=for-the-badge" /></a>
 </p>
 
 DidYouMean (or `dym`) is a command-line spelling corrector written in rust utilizing [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). DidYouMean is for those moments when you know what a word sounds like, but you're not quite sure how it's spelled.
