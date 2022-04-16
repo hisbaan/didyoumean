@@ -1,17 +1,19 @@
-use std::cmp::min;
 use clap::Parser;
+use std::cmp::{min, Ordering};
 
 const WORDS: &str = include_str!("words.txt");
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
-#[clap(author = "Hisbaan Noorani", version = "0.1.0", about = "Did You Mean: A cli spell checking program", long_about = None)]
+#[clap(author = "Hisbaan Noorani", version = "1.0", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 struct Cli {
     search_term: String,
-    #[clap(short = 'n', long = "number", default_value_t = 5)]
+    #[clap(short = 'n', long = "number", default_value_t = 5, help = "Change the number of matches printed")]
     number: usize,
-    #[clap(short = 'v', long = "verbose")]
+    #[clap(short = 'v', long = "verbose", help = "Print verbose output")]
     verbose: bool,
+    #[clap(short = 'c', long = "clean-output", help = "Print clean output")]
+    clean_output: bool,
 }
 
 fn main() {
@@ -22,8 +24,8 @@ fn main() {
     let dictionary = WORDS.split('\n');
 
     // Create mutable vecs for storing the top n words.
-    let mut top_n_words = vec!["" ; args.number];
-    let mut top_n_dists = vec![args.search_term.len() * 10 ; args.number];
+    let mut top_n_words = vec![""; args.number];
+    let mut top_n_dists = vec![args.search_term.len() * 10; args.number];
 
     // Loop over the words in the dictionary, run the algorithm, and
     // add to the list if appropriate
@@ -44,9 +46,20 @@ fn main() {
     }
 
     // Print out results.
+    if !args.clean_output { println!("Did you mean?"); }
     for i in 0..args.number {
-        if args.verbose { print!("{}, ", top_n_dists[i]); }
-        println!("{}", top_n_words[i]);
+        if args.clean_output {
+            println!("{}", top_n_words[i]);
+        } else if args.verbose {
+            println!(
+                "{}. {} (edit distance: {})",
+                i + 1,
+                top_n_words[i],
+                top_n_dists[i]
+            );
+        } else {
+            println!("{}. {}", i + 1, top_n_words[i]);
+        }
     }
 }
 
@@ -67,22 +80,21 @@ fn main() {
 /// assert_eq!(shifted, vec![0, 1, 11, 2, 3]);
 /// ```
 fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<T> {
-    if index > list.len() - 1 { return list; }
+    if index > list.len() - 1 {
+        return list;
+    }
 
     let mut temp = list.clone();
 
     for i in 0..list.len() {
-        if i == index {
-            temp[i] = element;
-
-        } else if i > index {
-            temp[i] = list[i - 1];
-        } else {
-            temp[i] = list[i];
+        match i.cmp(&index) {
+            Ordering::Greater => temp[i] = list[i - 1],
+            Ordering::Less => temp[i] = list[i],
+            Ordering::Equal => temp[i] = element
         }
     }
 
-    return temp;
+    temp
 }
 
 /// Return the edit distance between `search_term` and `known_term`. Currently implemented
@@ -107,11 +119,15 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
     let known_chars: Vec<char> = known_term.chars().collect();
 
     // Setup matrix 2D vector.
-    let mut mat = vec![vec![0 ; m] ; n];
+    let mut mat = vec![vec![0; m]; n];
 
     // Initialize values of the matrix.
-    for i in 1..n { mat[i][0] = i; }
-    for i in 1..m { mat[0][i] = i; }
+    for i in 1..n {
+        mat[i][0] = i;
+    }
+    for i in 1..m {
+        mat[0][i] = i;
+    }
 
     // Run the algorithm.
     for i in 1..n {
@@ -122,14 +138,15 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
             }
 
             mat[i][j] = min(
-                mat[i - 1][j - 1] + sub_cost,   // substitution cost
+                mat[i - 1][j - 1] + sub_cost, // substitution cost
                 min(
-                    mat[i - 1][j] + 1,          // deletion cost
-                    mat[i][j - 1] + 1,          // insertion cost
-                ));
+                    mat[i - 1][j] + 1, // deletion cost
+                    mat[i][j - 1] + 1, // insertion cost
+                ),
+            );
         }
     }
 
     // Return the bottom left corner of the matrix.
-    return mat[n-1][m-1];
+    mat[n - 1][m - 1]
 }
