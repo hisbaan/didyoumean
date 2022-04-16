@@ -1,9 +1,17 @@
 [package]
 name = "dym"
-version = "0.1.0"
+authors = ["Hisbaan Noorani"]
+version = "1.0.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "GPL-3.0"
+license-file = "docs/LICENSE"
+description = "A cli spelling corrector"
+documentation = "https://github.com/hisbaan/didyoumean"
+homepage = "https://github.com/hisbaan/didyoumean"
+repository = "https://github.com/hisbaan/didyoumean"
+readme = "docs/README.md"
+keywords = ["levenshtein", "damerau", "levenshtein-distance", "damerau-levenshtein-distance", "edit-distance"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "3.1.8", features = ["derive"] }
