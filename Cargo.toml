@@ -4,13 +4,12 @@ authors = ["Hisbaan Noorani"]
 version = "1.0.0"
 edition = "2021"
 license = "GPL-3.0"
-license-file = "docs/LICENSE"
 description = "A cli spelling corrector"
 documentation = "https://github.com/hisbaan/didyoumean"
 homepage = "https://github.com/hisbaan/didyoumean"
 repository = "https://github.com/hisbaan/didyoumean"
 readme = "docs/README.md"
-keywords = ["levenshtein", "damerau", "levenshtein-distance", "damerau-levenshtein-distance", "edit-distance"]
+keywords = ["levenshtein", "damerau", "edit-distance"]
 categories = ["command-line-utilities"]
 
 [dependencies]
