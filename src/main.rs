@@ -1,19 +1,27 @@
 use clap::Parser;
+use colored::*;
 use std::cmp::{min, Ordering};
 
 const WORDS: &str = include_str!("words.txt");
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
-#[clap(author = "Hisbaan Noorani", version = "1.0.0", about = "Did You Mean: A cli spelling corrector", long_about = None)]
+#[clap(author = "Hisbaan Noorani", version = "1.0.2", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 struct Cli {
     search_term: String,
-    #[clap(short = 'n', long = "number", default_value_t = 5, help = "Change the number of matches printed")]
+    #[clap(
+        short = 'n',
+        long = "number",
+        default_value_t = 5,
+        help = "Change the number of matches printed"
+    )]
     number: usize,
-    #[clap(short = 'v', long = "verbose", help = "Print verbose output")]
-    verbose: bool,
     #[clap(short = 'c', long = "clean-output", help = "Print clean output")]
     clean_output: bool,
+    #[clap(short = 'v', long = "verbose", help = "Print verbose output")]
+    verbose: bool,
+    #[clap(long = "no-color", help = "Print without color")]
+    no_color: bool,
 }
 
 fn main() {
@@ -46,20 +54,32 @@ fn main() {
     }
 
     // Print out results.
-    if !args.clean_output { println!("Did you mean?"); }
+    if !args.clean_output && !args.no_color {
+        println!("{}", "Did you mean?".blue().bold());
+    } else if args.no_color {
+        println!("{}", "Did you mean?".bold());
+    }
     for i in 0..args.number {
-        if args.clean_output {
-            println!("{}", top_n_words[i]);
-        } else if args.verbose {
-            println!(
-                "{}. {} (edit distance: {})",
-                i + 1,
-                top_n_words[i],
-                top_n_dists[i]
-            );
-        } else {
-            println!("{}. {}", i + 1, top_n_words[i]);
+        let mut output: String = "".to_string();
+        let indent = args.number.to_string().len();
+
+        // Add numbers if not clean.
+        if !args.clean_output && !args.no_color {
+            output.push_str(&format!("{:>indent$}", format!("{}. ", (i + 1).to_string()).purple()));
+        } else if args.no_color {
+            output.push_str(&format!("{:>indent$}. ", (i + 1).to_string()));
         }
+
+        // Add words in order of edit distance.
+        output.push_str(&top_n_words[i]);
+
+        // Add edit distance if verbose.
+        if args.verbose {
+            output.push_str(&format!(" (edit distance: {})", top_n_dists[i]));
+        }
+
+        // Print concatenated string.
+        println!("{}", output);
     }
 }
 
@@ -90,15 +110,16 @@ fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<T> {
         match i.cmp(&index) {
             Ordering::Greater => temp[i] = list[i - 1],
             Ordering::Less => temp[i] = list[i],
-            Ordering::Equal => temp[i] = element
+            Ordering::Equal => temp[i] = element,
         }
     }
 
     temp
 }
 
-/// Return the edit distance between `search_term` and `known_term`. Currently implemented
-/// using [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance).
+/// Return the edit distance between `search_term` and `known_term`.
+/// Currently implemented using a modified version of
+/// [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance).
 ///
 /// # Arguments
 ///
@@ -144,6 +165,16 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
                     mat[i][j - 1] + 1, // insertion cost
                 ),
             );
+            if i > 1
+                && j > 1
+                && search_chars[i - 1] == known_chars[j - 2]
+                && search_chars[i - 2] == known_chars[j - 1]
+            {
+                mat[i][j] = min(
+                    mat[i][j],
+                    mat[i - 2][j - 2] + 1, // transposition cost
+                );
+            }
         }
     }
 
