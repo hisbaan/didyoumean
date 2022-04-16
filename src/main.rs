@@ -65,7 +65,7 @@ fn main() {
 
         // Add numbers if not clean.
         if !args.clean_output && !args.no_color {
-            output.push_str(&format!("{:>indent$}", format!("{}. ", (i + 1).to_string()).purple()));
+            output.push_str(&format!("{:>indent$}{} ", (i + 1).to_string().purple(), ".".purple()));
         } else if args.no_color {
             output.push_str(&format!("{:>indent$}. ", (i + 1).to_string()));
         }
