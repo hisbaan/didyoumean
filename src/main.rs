@@ -5,7 +5,7 @@ use std::cmp::{min, Ordering};
 // use clipboard::{ ClipboardProvider, ClipboardContext};
 use dialoguer::{theme::ColorfulTheme, Select};
 use nix::unistd::{fork, ForkResult};
-use std::io::Error;
+use std::io::{self, Error, BufRead};
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -13,7 +13,8 @@ const WORDS: &str = include_str!("words.txt");
 #[derive(Parser)]
 #[clap(author = "Hisbaan Noorani", version = "1.0.2", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 struct Cli {
-    search_term: String,
+    search_term: Option<String>,
+    // search_term: String,
     #[clap(
         short = 'n',
         long = "number",
@@ -49,18 +50,38 @@ fn run_app() -> std::result::Result<(), Error> {
     // Parse args using clap.
     let args = Cli::parse();
 
+    let mut search_term  = String::new();
+
+    // Check if nothing was passed in as the search term.
+    if args.search_term == None {
+        // Check if stdin is empty
+        if atty::is(atty::Stream::Stdin) {
+            // TODO figure out the right menu to print here.
+            // let mut app = clap::App::new("didyoumean");
+            // app.print_help();
+            std::process::exit(1);
+        } else {
+            // Read search_term from standard input
+            let stdin = io::stdin();
+            stdin.lock().read_line(&mut search_term).unwrap();
+        }
+    } else {
+        // Unwrap Option<String> that was read from the client.
+        search_term = args.search_term.unwrap();
+    }
+
     // Get dictionary of words from words.txt.
     let dictionary = WORDS.split('\n');
 
     // Create mutable vecs for storing the top n words.
     let mut top_n_words = vec![""; args.number];
-    let mut top_n_dists = vec![args.search_term.len() * 10; args.number];
+    let mut top_n_dists = vec![search_term.len() * 10; args.number];
 
     // Loop over the words in the dictionary, run the algorithm, and
     // add to the list if appropriate
     for word in dictionary {
         // Get edit distance.
-        let dist = edit_distance(&args.search_term, word);
+        let dist = edit_distance(&search_term, word);
 
         // Add to the list if appropriate.
         if dist < top_n_dists[args.number - 1] {
@@ -139,7 +160,7 @@ fn run_app() -> std::result::Result<(), Error> {
             // If no argument is chosen.
             None => {
                 println!("{}", "No selection made".red());
-                std::process::exit(0);
+                std::process::exit(1);
             }
         }
     } else {
@@ -149,7 +170,7 @@ fn run_app() -> std::result::Result<(), Error> {
         }
     }
 
-    return Ok(());
+    Ok(())
 }
 
 /// Copy `string` to the system clipboard
