@@ -1,6 +1,11 @@
 use clap::Parser;
+use cli_clipboard::{ClipboardContext, ClipboardProvider};
 use colored::*;
 use std::cmp::{min, Ordering};
+// use clipboard::{ ClipboardProvider, ClipboardContext};
+use dialoguer::{theme::ColorfulTheme, Select};
+use nix::unistd::{fork, ForkResult};
+use std::io::Error;
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -22,9 +27,25 @@ struct Cli {
     verbose: bool,
     #[clap(long = "no-color", help = "Print without color")]
     no_color: bool,
+    #[clap(
+        short = 'y',
+        long = "yank",
+        help = "Yank (coppy) to the system cliboard"
+    )]
+    yank: bool,
 }
 
 fn main() {
+    std::process::exit(match run_app() {
+        Ok(_) => 0,
+        Err(error) => {
+            eprintln!("Error: {:?}", error);
+            1
+        }
+    });
+}
+
+fn run_app() -> std::result::Result<(), Error> {
     // Parse args using clap.
     let args = Cli::parse();
 
@@ -59,13 +80,18 @@ fn main() {
     } else if args.no_color {
         println!("{}", "Did you mean?".bold());
     }
+    let mut items = vec!["".to_string(); args.number];
     for i in 0..args.number {
         let mut output: String = "".to_string();
         let indent = args.number.to_string().len();
 
         // Add numbers if not clean.
         if !args.clean_output && !args.no_color {
-            output.push_str(&format!("{:>indent$}{} ", (i + 1).to_string().purple(), ".".purple()));
+            output.push_str(&format!(
+                "{:>indent$}{} ",
+                (i + 1).to_string().purple(),
+                ".".purple()
+            ));
         } else if args.no_color {
             output.push_str(&format!("{:>indent$}. ", (i + 1).to_string()));
         }
@@ -79,7 +105,103 @@ fn main() {
         }
 
         // Print concatenated string.
-        println!("{}", output);
+        items[i] = output;
+    }
+
+    // If the yank argument is set, copy the item to the clipboard.
+    if args.yank {
+        // Print prompt
+        println!(
+            "{} {}",
+            "?".yellow(),
+            "[↑↓ to move, ↵ to select, esc/q to cancel]".bold()
+        );
+        // Get the chosen argument.
+        let chosen = Select::with_theme(&ColorfulTheme::default())
+            .items(&items)
+            .default(0)
+            .interact_opt()?;
+
+        // Print out items since dialoguer clears.
+        for item in items {
+            println!("  {}", item);
+        }
+
+        match chosen {
+            // If the chosen arguemnt is valid.
+            Some(index) => {
+                yank(top_n_words[index]);
+                println!(
+                    "{}",
+                    format!("\"{}\" coppied to clipboard", top_n_words[index]).green()
+                );
+            }
+            // If no argument is chosen.
+            None => {
+                println!("{}", "No selection made".red());
+                std::process::exit(0);
+            }
+        }
+    } else {
+        // If yank is not set, print out all the items.
+        for item in items {
+            println!("{}", item);
+        }
+    }
+
+    return Ok(());
+}
+
+/// Copy `string` to the system clipboard
+///
+/// # Arguments
+///
+/// * `string` - the string to be copied.
+fn yank(string: &str) {
+    let platform = std::env::consts::OS;
+    if vec![
+        "linux",
+        "freebsd",
+        "netbsd",
+        "dragonfly",
+        "netbsd",
+        "openbsd",
+        "solaris",
+    ]
+        .contains(&platform)
+    {
+        // The platform is linux/*bsd and is likely using X11 or Wayland.
+        // There is a fix needed for clipboard use in cases like these.
+        // The clipboard is cleared on X11/Wayland after the process that set it exist.
+        // To combat this, we will fork and keep a process aroudn until the clipboard
+        // is cleared.
+        // Ideally, this wouldn't be an issue but it was a conscious design decision
+        // on X11/Wayland
+        match unsafe { fork() } {
+            Ok(ForkResult::Child) => {
+                let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+                ctx.set_contents(string.to_owned()).unwrap();
+
+                // Keep the process running until the clipboard changes.
+                loop {
+                    let clipboard = format!("{:?}", ctx.get_contents());
+                    std::thread::sleep(std::time::Duration::from_secs(10));
+                    if clipboard != string {
+                        std::process::exit(0);
+                    }
+                }
+            }
+            Err(_) => {
+                println!("{}", "Error: Clipboard fork failed".red());
+                std::process::exit(1);
+            }
+            _ => {}
+        }
+    } else {
+        // The platform is NOT running X11/Wayland and thus, we don't have to handle
+        // the clipboard clearing behaviour.
+        let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+        ctx.set_contents(string.to_owned()).unwrap();
     }
 }
 
@@ -166,9 +288,9 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
                 ),
             );
             if i > 1
-                && j > 1
-                && search_chars[i - 1] == known_chars[j - 2]
-                && search_chars[i - 2] == known_chars[j - 1]
+            && j > 1
+            && search_chars[i - 1] == known_chars[j - 2]
+            && search_chars[i - 2] == known_chars[j - 1]
             {
                 mat[i][j] = min(
                     mat[i][j],
