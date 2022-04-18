@@ -48,6 +48,10 @@ fn main() {
 
 /// Main function to run the application. Return `std::result::Result<(), std::io::Error>`.
 fn run_app() -> std::result::Result<(), Error> {
+    // Correctly output ANSI escape codes on Windows.
+    #[cfg(windows)]
+    colored::control::set_virtual_terminal(true).ok();
+
     // Parse args using clap.
     let args = Cli::parse();
 
@@ -160,7 +164,7 @@ fn run_app() -> std::result::Result<(), Error> {
                 yank(top_n_words[index]);
                 println!(
                     "{}",
-                    format!("\"{}\" coppied to clipboard", top_n_words[index]).green()
+                    format!("\"{}\" copied to clipboard", top_n_words[index]).green()
                 );
             }
             // If no argument is chosen.
