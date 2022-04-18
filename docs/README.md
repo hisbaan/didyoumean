@@ -19,10 +19,16 @@ DidYouMean (or `dym`) is a command-line spelling corrector written in rust utili
 
 ### Arch Linux (and derivatives)
 
-DidYouMean is available on the AUR as [`didyoumean-git`](https://aur.archlinux.org/packages/didyoumean-git). You can install it using any AUR helper. Using `paru`, the command would be as follows:
+DidYouMean is available on the AUR as three different packages:
+
+- [didyoumean](https://aur.archlinux.org/packages/didyoumean): Last stable release, built from source (Thank you [orhun](https://github.com/orhun)!).
+- [didyoumean-git](https://aur.archlinux.org/packages/didyoumean-git): Last git commit, built from source. This is the most up to date, but the least stable.
+- [didyoumean-bin](https://aur.archlinux.org/packages/didyoumean-bin): Last stable release, distributed as a binary. This is only available for `x86_64` at the moment.
+
+You can install it using any AUR helper. Using `paru`, the command would be as follows:
 
 ```sh
-paru -S didyoumean-git
+paru -S <package choice from above>
 ```
 
 ### NixOS
