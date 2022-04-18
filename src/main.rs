@@ -12,7 +12,7 @@ const WORDS: &str = include_str!("words.txt");
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
-#[clap(author = "Hisbaan Noorani", version = "1.0.2", about = "Did You Mean: A cli spelling corrector", long_about = None)]
+#[clap(author = "Hisbaan Noorani", version = "1.1.0", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 struct Cli {
     search_term: Option<String>,
     #[clap(

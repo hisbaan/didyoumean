@@ -1,4 +1,3 @@
-
 <h1 align="center">DidYouMean</h1>
 
 <p align="center">
@@ -16,7 +15,7 @@ DidYouMean (or `dym`) is a command-line spelling corrector written in rust utili
 
 ## Installation
 
-### Arch Linux
+### Arch Linux (and derivatives)
 
 DidYouMean is available on the AUR as [`didyoumean-git`](https://aur.archlinux.org/packages/didyoumean-git). You can install it using any AUR helper. Using `paru`, the command would be as follows:
 
@@ -24,9 +23,13 @@ DidYouMean is available on the AUR as [`didyoumean-git`](https://aur.archlinux.o
 paru -S didyoumean-git
 ```
 
-### From binaries
+### NixOS
 
-Check out the [Releases page](https://github.com/hisbaan/didyoumean/releases) for prebuilt versions of `dym`.
+[evanjs](https://github.com/evanjs) very kindly packaged `didyoumean` for NixOS. The command to install is as follows:
+
+```sh
+nix-env install -iA nixpkgs.didyoumean
+```
 
 ### Build from source
 

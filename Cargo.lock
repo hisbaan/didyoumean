@@ -258,7 +258,7 @@ dependencies = [
 
 [[package]]
 name = "didyoumean"
-version = "1.0.2-2"
+version = "1.1.0"
 dependencies = [
  "atty",
  "clap 3.1.8",
