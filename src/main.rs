@@ -97,8 +97,8 @@ fn run_app() -> std::result::Result<(), Error> {
         if dist < top_n_dists[args.number - 1] {
             for i in 0..args.number {
                 if dist < top_n_dists[i] {
-                    top_n_dists = insert_and_shift(top_n_dists, i, dist);
-                    top_n_words = insert_and_shift(top_n_words, i, word);
+                    insert_and_shift(&mut top_n_dists, i, dist);
+                    insert_and_shift(&mut top_n_words, i, word);
                     break;
                 }
             }
@@ -237,7 +237,7 @@ fn yank(string: &str) {
     }
 }
 
-/// Return a vec with `element` inserted at `index` and the rest of the vec shifted.
+/// Insert `element` at `index` preserving length.
 ///
 /// # Arguments
 ///
@@ -248,27 +248,18 @@ fn yank(string: &str) {
 /// # Examples
 ///
 /// ```
-/// let to_shift = vec![0, 1, 2, 3, 4];
-/// let shifted = insert_and_shift(to_shift, 2, 11);
+/// let mut to_shift = vec![0, 1, 2, 3, 4];
+/// insert_and_shift(&mut to_shift, 2, 11);
 ///
-/// assert_eq!(shifted, vec![0, 1, 11, 2, 3]);
+/// assert_eq!(to_shift, vec![0, 1, 11, 2, 3]);
 /// ```
-fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<T> {
+fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
     if index > list.len() - 1 {
-        return list;
+        return;
     }
 
-    let mut temp = list.clone();
-
-    for i in 0..list.len() {
-        match i.cmp(&index) {
-            Ordering::Greater => temp[i] = list[i - 1],
-            Ordering::Less => temp[i] = list[i],
-            Ordering::Equal => temp[i] = element,
-        }
-    }
-
-    temp
+    list.insert(index, element);
+    list.truncate(list.len() - 1);
 }
 
 /// Return the edit distance between `search_term` and `known_term`.
