@@ -1,4 +1,4 @@
-pub use std::cmp::{min, Ordering};
+pub use std::cmp::min;
 pub use cli_clipboard::{ClipboardContext, ClipboardProvider};
 pub use colored::*;
 
@@ -59,7 +59,7 @@ pub fn yank(string: &str) {
     }
 }
 
-/// Return a vec with `element` inserted at `index` and the rest of the vec shifted.
+/// Insert `element` at `index` preserving length.
 ///
 /// # Arguments
 ///
@@ -71,26 +71,18 @@ pub fn yank(string: &str) {
 ///
 /// ```
 /// # use didyoumean::insert_and_shift;
-/// let to_shift = vec![0, 1, 2, 3, 4];
-/// let shifted = insert_and_shift(to_shift, 2, 11);
-/// assert_eq!(shifted, vec![0, 1, 11, 2, 3]);
+/// let mut to_shift = vec![0, 1, 2, 3, 4];
+/// insert_and_shift(&mut to_shift, 2, 11);
+///
+/// assert_eq!(to_shift, vec![0, 1, 11, 2, 3]);
 /// ```
-pub fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<T> {
+pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
     if index > list.len() - 1 {
-        return list;
+        return;
     }
 
-    let mut temp = list.clone();
-
-    for i in 0..list.len() {
-        match i.cmp(&index) {
-            Ordering::Greater => temp[i] = list[i - 1],
-            Ordering::Less => temp[i] = list[i],
-            Ordering::Equal => temp[i] = element,
-        }
-    }
-
-    temp
+    list.insert(index, element);
+    list.truncate(list.len() - 1);
 }
 
 /// Return the edit distance between `search_term` and `known_term`.

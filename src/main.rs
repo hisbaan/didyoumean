@@ -96,8 +96,8 @@ fn run_app() -> std::result::Result<(), Error> {
         if dist < top_n_dists[args.number - 1] {
             for i in 0..args.number {
                 if dist < top_n_dists[i] {
-                    top_n_dists = insert_and_shift(top_n_dists, i, dist);
-                    top_n_words = insert_and_shift(top_n_words, i, word);
+                    insert_and_shift(&mut top_n_dists, i, dist);
+                    insert_and_shift(&mut top_n_words, i, word);
                     break;
                 }
             }
@@ -181,4 +181,3 @@ fn run_app() -> std::result::Result<(), Error> {
 
     Ok(())
 }
-
