@@ -1,11 +1,11 @@
 <h1 align="center">DidYouMean</h1>
 
 <p align="center">
-    <a href="LICENSE"> <img src="https://img.shields.io/aur/license/didyoumean-git?style=for-the-badge" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3-13233a?style=for-the-badge" /></a>
     <a href="https://aur.archlinux.org/packages/didyoumean-git/"> <img src="https://img.shields.io/aur/version/didyoumean-git?color=1793d1&label=didyoumean-git&logo=arch-linux&style=for-the-badge" /></a>
-    <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/NixOS-v1.1.0-5277c3?style=for-the-badge&logo=NixOS" /></a>
-    <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/Homebrew-v1.1.0-fbb040?style=for-the-badge&logo=Homebrew" /></a>
-    <a href="https://lib.rs/crates/didyoumean"> <img src="https://img.shields.io/crates/v/didyoumean?color=red&label=crates.io/lib.rs&logo=Rust&style=for-the-badge" /></a>
+    <a href="https://github.com/NixOS/nixpkgs/tree/master/pkgs/tools/misc/didyoumean"><img src="https://img.shields.io/badge/dynamic/json?color=5277c3&label=NixOS&query=%24.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fhisbaan%2Fdidyoumean%2Freleases%2Flatest&style=for-the-badge&logo=NixOS"/></a>
+    <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/dynamic/json?color=fbb040&label=Homebrew&query=%24.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fhisbaan%2Fdidyoumean%2Freleases%2Flatest&style=for-the-badge&logo=Homebrew" /></a>
+    <a href="https://lib.rs/crates/didyoumean"> <img src="https://img.shields.io/crates/v/didyoumean?color=red&label=crates.io/lib.rs&logo=Rust&style=for-the-badge&logoColor=red" /></a>
 </p>
 
 DidYouMean (or `dym`) is a command-line spelling corrector written in rust utilizing [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). DidYouMean is for those moments when you know what a word sounds like, but you're not quite sure how it's spelled.
@@ -42,7 +42,7 @@ brew tap hisbaan/tap
 brew install didyoumean
 ```
 
-### Build from source
+### Cargo
 
 Run the following command to build `dym` from source and install it in your home directory. Ensure that you have `$CARGO_HOME/bin/` in your path.
 
