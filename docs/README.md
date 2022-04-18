@@ -3,6 +3,8 @@
 <p align="center">
     <a href="LICENSE"> <img src="https://img.shields.io/aur/license/didyoumean-git?style=for-the-badge" /></a>
     <a href="https://aur.archlinux.org/packages/didyoumean-git/"> <img src="https://img.shields.io/aur/version/didyoumean-git?color=1793d1&label=didyoumean-git&logo=arch-linux&style=for-the-badge" /></a>
+    <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/NixOS-v1.1.0-5277c3?style=for-the-badge&logo=NixOS" /></a>
+    <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/Homebrew-v1.1.0-fbb040?style=for-the-badge&logo=Homebrew" /></a>
     <a href="https://lib.rs/crates/didyoumean"> <img src="https://img.shields.io/crates/v/didyoumean?color=red&label=crates.io/lib.rs&logo=Rust&style=for-the-badge" /></a>
 </p>
 
@@ -29,6 +31,15 @@ paru -S didyoumean-git
 
 ```sh
 nix-env install -iA nixpkgs.didyoumean
+```
+
+### Homebrew (macOS)
+
+Homebrew is a package manager for macOS. Currently, I have only packaged an x86\_64 binary. The command to install it is as follows:
+
+```sh
+brew tap hisbaan/tap
+brew install didyoumean
 ```
 
 ### Build from source
