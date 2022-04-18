@@ -22,4 +22,6 @@ colored = { version = "2" }
 cli-clipboard = {version = "0.2.1"}
 # clipboard-ext = { version = "0.2.0" }
 dialoguer = {version = "0.10.0"}
+
+[target.'cfg(unix)'.dependencies]
 nix = { version = "0.23.1" }

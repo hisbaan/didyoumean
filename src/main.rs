@@ -4,8 +4,10 @@ use colored::*;
 use std::cmp::{min, Ordering};
 // use clipboard::{ ClipboardProvider, ClipboardContext};
 use dialoguer::{theme::ColorfulTheme, Select};
-use nix::unistd::{fork, ForkResult};
 use std::io::Error;
+
+#[cfg(unix)]
+use nix::unistd::{fork, ForkResult};
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -168,7 +170,7 @@ fn yank(string: &str) {
         "openbsd",
         "solaris",
     ]
-        .contains(&platform)
+    .contains(&platform)
     {
         // The platform is linux/*bsd and is likely using X11 or Wayland.
         // There is a fix needed for clipboard use in cases like these.
@@ -177,6 +179,7 @@ fn yank(string: &str) {
         // is cleared.
         // Ideally, this wouldn't be an issue but it was a conscious design decision
         // on X11/Wayland
+        #[cfg(unix)]
         match unsafe { fork() } {
             Ok(ForkResult::Child) => {
                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
@@ -288,9 +291,9 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
                 ),
             );
             if i > 1
-            && j > 1
-            && search_chars[i - 1] == known_chars[j - 2]
-            && search_chars[i - 2] == known_chars[j - 1]
+                && j > 1
+                && search_chars[i - 1] == known_chars[j - 2]
+                && search_chars[i - 2] == known_chars[j - 1]
             {
                 mat[i][j] = min(
                     mat[i][j],
