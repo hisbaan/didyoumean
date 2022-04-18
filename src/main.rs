@@ -160,7 +160,7 @@ fn run_app() -> std::result::Result<(), Error> {
                 yank(top_n_words[index]);
                 println!(
                     "{}",
-                    format!("\"{}\" coppied to clipboard", top_n_words[index]).green()
+                    format!("\"{}\" copied to clipboard", top_n_words[index]).green()
                 );
             }
             // If no argument is chosen.
