@@ -2,10 +2,9 @@ use clap::Parser;
 use cli_clipboard::{ClipboardContext, ClipboardProvider};
 use colored::*;
 use std::cmp::{min, Ordering};
-// use clipboard::{ ClipboardProvider, ClipboardContext};
 use dialoguer::{theme::ColorfulTheme, Select};
 use nix::unistd::{fork, ForkResult};
-use std::io::{self, Error, BufRead};
+use std::io::{self, BufRead, Error};
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -14,7 +13,6 @@ const WORDS: &str = include_str!("words.txt");
 #[clap(author = "Hisbaan Noorani", version = "1.0.2", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 struct Cli {
     search_term: Option<String>,
-    // search_term: String,
     #[clap(
         short = 'n',
         long = "number",
@@ -31,7 +29,7 @@ struct Cli {
     #[clap(
         short = 'y',
         long = "yank",
-        help = "Yank (coppy) to the system cliboard"
+        help = "Yank (copy) to the system cliboard"
     )]
     yank: bool,
 }
@@ -46,22 +44,28 @@ fn main() {
     });
 }
 
+/// Main function to run the application. Return `std::result::Result<(), std::io::Error>`.
 fn run_app() -> std::result::Result<(), Error> {
     // Parse args using clap.
     let args = Cli::parse();
 
-    let mut search_term  = String::new();
+    let mut search_term = String::new();
 
     // Check if nothing was passed in as the search term.
     if args.search_term == None {
-        // Check if stdin is empty
+        // Check if stdin is empty, produce error if so.
         if atty::is(atty::Stream::Stdin) {
-            // TODO figure out the right menu to print here.
-            // let mut app = clap::App::new("didyoumean");
-            // app.print_help();
-            std::process::exit(1);
+            let mut cmd = clap::Command::new("dym [OPTIONS] <SEARCH_TERM>");
+            let error = cmd.error(
+                clap::ErrorKind::MissingRequiredArgument,
+                format!(
+                    "The {} argument was not provided.\n\n\tEither provide it as an argument or pass it in from standard input.",
+                    "<SEARCH_TERM>".green()
+                )
+            );
+            clap::Error::exit(&error);
         } else {
-            // Read search_term from standard input
+            // Read search_term from standard input if stdin is not empty.
             let stdin = io::stdin();
             stdin.lock().read_line(&mut search_term).unwrap();
         }
@@ -189,7 +193,7 @@ fn yank(string: &str) {
         "openbsd",
         "solaris",
     ]
-        .contains(&platform)
+    .contains(&platform)
     {
         // The platform is linux/*bsd and is likely using X11 or Wayland.
         // There is a fix needed for clipboard use in cases like these.
@@ -309,9 +313,9 @@ fn edit_distance(search_term: &str, known_term: &str) -> usize {
                 ),
             );
             if i > 1
-            && j > 1
-            && search_chars[i - 1] == known_chars[j - 2]
-            && search_chars[i - 2] == known_chars[j - 1]
+                && j > 1
+                && search_chars[i - 1] == known_chars[j - 2]
+                && search_chars[i - 2] == known_chars[j - 1]
             {
                 mat[i][j] = min(
                     mat[i][j],
