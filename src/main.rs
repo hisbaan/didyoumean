@@ -3,8 +3,10 @@ use cli_clipboard::{ClipboardContext, ClipboardProvider};
 use colored::*;
 use std::cmp::{min, Ordering};
 use dialoguer::{theme::ColorfulTheme, Select};
-use nix::unistd::{fork, ForkResult};
 use std::io::{self, BufRead, Error};
+
+#[cfg(unix)]
+use nix::unistd::{fork, ForkResult};
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -202,6 +204,7 @@ fn yank(string: &str) {
         // is cleared.
         // Ideally, this wouldn't be an issue but it was a conscious design decision
         // on X11/Wayland
+        #[cfg(unix)]
         match unsafe { fork() } {
             Ok(ForkResult::Child) => {
                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
