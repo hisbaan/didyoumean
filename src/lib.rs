@@ -38,8 +38,8 @@ pub fn yank(string: &str) {
 
                 // Keep the process running until the clipboard changes.
                 loop {
-                    let clipboard = format!("{:?}", ctx.get_contents());
-                    std::thread::sleep(std::time::Duration::from_secs(10));
+                    let clipboard = format!("{}", ctx.get_contents().unwrap());
+                    std::thread::sleep(std::time::Duration::from_secs(1));
                     if clipboard != string {
                         std::process::exit(0);
                     }
@@ -70,9 +70,9 @@ pub fn yank(string: &str) {
 /// # Examples
 ///
 /// ```
+/// # use didyoumean::insert_and_shift;
 /// let to_shift = vec![0, 1, 2, 3, 4];
 /// let shifted = insert_and_shift(to_shift, 2, 11);
-///
 /// assert_eq!(shifted, vec![0, 1, 11, 2, 3]);
 /// ```
 pub fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<T> {
@@ -105,6 +105,7 @@ pub fn insert_and_shift<T: Copy>(list: Vec<T>, index: usize, element: T) -> Vec<
 /// # Examples
 ///
 /// ```
+/// # use didyoumean::edit_distance;
 /// let dist = edit_distance("sitting", "kitten");
 /// assert_eq!(dist, 3)
 /// ```
