@@ -103,55 +103,57 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 /// assert_eq!(edit_distance("geek", "gesek"), 1);
 /// assert_eq!(edit_distance("cat", "cut"), 1);
 /// assert_eq!(edit_distance("sunday", "saturday"), 3);
+/// assert_eq!(edit_distance("tset", "test"), 1);
 /// ```
 pub fn edit_distance(search_term: &str, known_term: &str) -> usize {
     // Set local constants for repeated use later.
     let n = search_term.len() + 1;
     let m = known_term.len() + 1;
-    let mut search_chars = search_term.chars();
+    let search_chars: Vec<char> = search_term.chars().collect();
+    let known_chars: Vec<char> = known_term.chars().collect();
 
     // Setup matrix 2D vector.
-    let mut mat = vec![vec![0; m]; n];
+    let mut mat = vec![0; m * n];
 
     // Initialize values of the matrix.
     for i in 1..n {
-        mat[i][0] = i;
+        mat[i * m] = i;
     }
     for i in 1..m {
-        mat[0][i] = i;
+        mat[i] = i;
     }
 
     // Run the algorithm.
     for i in 1..n {
-        let mut known_chars = known_term.chars();
-        let search_char = search_chars.next().unwrap();
+        let search_char_i_minus_one = search_chars[i - 1];
+        let search_char_i_minus_two = if i > 1 { search_chars[i - 2] } else { ' ' };
         for j in 1..m {
-            let sub_cost = if search_char == known_chars.next().unwrap() {
+            let sub_cost = if search_char_i_minus_one == known_chars[j - 1] {
                 0
             } else {
                 1
             };
 
-            mat[i][j] = min(
-                mat[i - 1][j - 1] + sub_cost, // substitution cost
+            mat[i * m + j] = min(
+                mat[(i - 1) * m + j - 1] + sub_cost, // substitution cost
                 min(
-                    mat[i - 1][j] + 1, // deletion cost
-                    mat[i][j - 1] + 1, // insertion cost
+                    mat[(i - 1) * m + j] + 1, // deletion cost
+                    mat[i * m + j - 1] + 1,   // insertion cost
                 ),
             );
-            // if i > 1
-            //     && j > 1
-            //     && search_chars[i - 1] == known_chars[j - 2]
-            //     && search_chars[i - 2] == known_chars[j - 1]
-            // {
-            //     mat[i][j] = min(
-            //         mat[i][j],
-            //         mat[i - 2][j - 2] + 1, // transposition cost
-            //     );
-            // }
+            if i > 1
+                && j > 1
+                && search_char_i_minus_one == known_chars[j - 2]
+                && search_char_i_minus_two == known_chars[j - 1]
+            {
+                mat[i * m + j] = min(
+                    mat[i * m + j],
+                    mat[(i - 2) * m + j - 2] + 1, // transposition cost
+                );
+            }
         }
     }
 
     // Return the bottom left corner of the matrix.
-    mat[n - 1][m - 1]
+    mat[m * n - 1]
 }
