@@ -2,16 +2,17 @@
 
 <p align="center">
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL3-13233a?style=for-the-badge" /></a>
-    <a href="https://aur.archlinux.org/packages/didyoumean-git/"> <img src="https://img.shields.io/aur/version/didyoumean-git?color=1793d1&label=didyoumean-git&logo=arch-linux&style=for-the-badge" /></a>
+    <a href="https://github.com/hisbaan/didyoumean/actions"><img src="https://img.shields.io/github/workflow/status/hisbaan/didyoumean/tests?style=for-the-badge" /></a>
+    <a href="https://aur.archlinux.org/packages/didyoumean/"> <img src="https://img.shields.io/aur/version/didyoumean?color=1793d1&label=AUR&logo=arch-linux&style=for-the-badge" /></a>
+    <a href="https://aur.archlinux.org/packages/didyoumean-bin/"> <img src="https://img.shields.io/aur/version/didyoumean-bin?color=1793d1&label=AUR-bin&logo=arch-linux&style=for-the-badge" /></a>
     <a href="https://github.com/NixOS/nixpkgs/tree/master/pkgs/tools/misc/didyoumean"><img src="https://img.shields.io/badge/dynamic/json?color=5277c3&label=NixOS&query=%24.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fhisbaan%2Fdidyoumean%2Freleases%2Flatest&style=for-the-badge&logo=NixOS"/></a>
     <a href="https://github.com/hisbaan/homebrew-tap"><img src="https://img.shields.io/badge/dynamic/json?color=fbb040&label=Homebrew&query=%24.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fhisbaan%2Fdidyoumean%2Freleases%2Flatest&style=for-the-badge&logo=Homebrew" /></a>
     <a href="https://lib.rs/crates/didyoumean"> <img src="https://img.shields.io/crates/v/didyoumean?color=red&label=crates.io/lib.rs&logo=Rust&style=for-the-badge&logoColor=red" /></a>
 </p>
 
-DidYouMean (or `dym`) is a command-line spelling corrector written in rust utilizing [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). DidYouMean is for those moments when you know what a word sounds like, but you're not quite sure how it's spelled.
+DidYouMean (or `dym`) is a command-line spelling corrector written in rust utilizing a simplified version of [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau-Levenshtein_distance). DidYouMean is for those moments when you know what a word sounds like, but you're not quite sure how it's spelled.
 
 <p align="center">
-    <!-- <img src="img/meningitis.png" height="250" style="border-radius: 10px; margin: 0.5em;"/> -->
     <img src="img/cyclophosphamide.png" height="250" style="border-radius: 10px; margin: 0.5em;"/>
 </p>
 
@@ -31,14 +32,6 @@ You can install it using any AUR helper. Using `paru`, the command would be as f
 paru -S <package choice from above>
 ```
 
-### NixOS
-
-[evanjs](https://github.com/evanjs) very kindly packaged `didyoumean` for NixOS. The command to install is as follows:
-
-```sh
-nix-env install -iA nixpkgs.didyoumean
-```
-
 ### Homebrew (macOS)
 
 Homebrew is a package manager for macOS. Currently, I have only packaged an x86\_64 binary. The command to install it is as follows:
@@ -46,6 +39,14 @@ Homebrew is a package manager for macOS. Currently, I have only packaged an x86\
 ```sh
 brew tap hisbaan/tap
 brew install didyoumean
+```
+
+### NixOS
+
+[evanjs](https://github.com/evanjs) very kindly packaged `didyoumean` for NixOS. The command to install is as follows:
+
+```sh
+nix-env install -iA nixpkgs.didyoumean
 ```
 
 ### Cargo
