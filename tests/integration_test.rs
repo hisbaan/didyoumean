@@ -1,5 +1,5 @@
+use cli_clipboard::{ClipboardContext, ClipboardProvider};
 use didyoumean::yank;
-use cli_clipboard::{ClipboardProvider, ClipboardContext};
 
 #[test]
 fn yank_test() {

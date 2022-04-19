@@ -98,18 +98,17 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 ///
 /// ```
 /// # use didyoumean::edit_distance;
-/// let dist = edit_distance("sitting", "kitten");
+/// let dist = edit_distance(&"sitting".chars().collect::<Vec<_>>(), "kitten");
 /// assert_eq!(dist, 3);
-/// assert_eq!(edit_distance("geek", "gesek"), 1);
-/// assert_eq!(edit_distance("cat", "cut"), 1);
-/// assert_eq!(edit_distance("sunday", "saturday"), 3);
-/// assert_eq!(edit_distance("tset", "test"), 1);
+/// assert_eq!(edit_distance(&"geek".chars().collect::<Vec<_>>(), "gesek"), 1);
+/// assert_eq!(edit_distance(&"cat".chars().collect::<Vec<_>>(), "cut"), 1);
+/// assert_eq!(edit_distance(&"sunday".chars().collect::<Vec<_>>(), "saturday"), 3);
+/// assert_eq!(edit_distance(&"tset".chars().collect::<Vec<_>>(), "test"), 1);
 /// ```
-pub fn edit_distance(search_term: &str, known_term: &str) -> usize {
+pub fn edit_distance(search_chars: &Vec<char>, known_term: &str) -> usize {
     // Set local constants for repeated use later.
-    let n = search_term.len() + 1;
+    let n = search_chars.len() + 1;
     let m = known_term.len() + 1;
-    let search_chars: Vec<char> = search_term.chars().collect();
     let known_chars: Vec<char> = known_term.chars().collect();
 
     // Setup matrix 2D vector.
