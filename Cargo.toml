@@ -25,3 +25,10 @@ atty = { version = "0.2.14" }
 
 [target.'cfg(unix)'.dependencies]
 nix = { version = "0.23.1" }
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "edit_distance"
+harness = false
