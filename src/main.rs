@@ -1,11 +1,11 @@
 pub mod lib;
 
-use std::io::{self, BufRead, Error};
 use clap::Parser;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
+use std::io::{self, BufRead, Error};
 
-use didyoumean::{yank, insert_and_shift, edit_distance};
+use didyoumean::{edit_distance, insert_and_shift, yank};
 
 const WORDS: &str = include_str!("words.txt");
 
@@ -88,9 +88,10 @@ fn run_app() -> std::result::Result<(), Error> {
 
     // Loop over the words in the dictionary, run the algorithm, and
     // add to the list if appropriate
+    let search_chars = search_term.chars().collect::<Vec<_>>();
     for word in dictionary {
         // Get edit distance.
-        let dist = edit_distance(&search_term, word);
+        let dist = edit_distance(&search_chars, word);
 
         // Add to the list if appropriate.
         if dist < top_n_dists[args.number - 1] {
