@@ -91,7 +91,9 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 ///
 /// # Arguments
 ///
-/// * `search_term` - The first string to compare
+/// * `search_chars` - The first `Vec<char>` to compare, in most time search_term will not change, so 
+/// we would like to share the same `Vec<char>` between multiple calls. you could use `search_string.chars().collect::<Vec<_>>()` to 
+/// convert a string to a `Vec<char>`
 /// * `known_term` - The second string to compare
 ///
 /// # Examples
