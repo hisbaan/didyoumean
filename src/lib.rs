@@ -1,9 +1,9 @@
-pub use cli_clipboard::{ClipboardContext, ClipboardProvider};
-pub use colored::*;
-pub use std::cmp::min;
+use cli_clipboard::{ClipboardContext, ClipboardProvider};
+use colored::*;
+use std::cmp::min;
 
 #[cfg(unix)]
-pub use nix::unistd::{fork, ForkResult};
+use nix::unistd::{fork, ForkResult};
 
 /// Copy `string` to the system clipboard
 ///
@@ -91,8 +91,8 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 ///
 /// # Arguments
 ///
-/// * `search_chars` - The first `Vec<char>` to compare, in most time search_term will not change, so 
-/// we would like to share the same `Vec<char>` between multiple calls. you could use `search_string.chars().collect::<Vec<_>>()` to 
+/// * `search_chars` - The first `Vec<char>` to compare, in most time search_term will not change, so
+/// we would like to share the same `Vec<char>` between multiple calls. you could use `search_string.chars().collect::<Vec<_>>()` to
 /// convert a string to a `Vec<char>`
 /// * `known_term` - The second string to compare
 ///
