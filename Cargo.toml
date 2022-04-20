@@ -1,15 +1,15 @@
 [package]
 name = "didyoumean"
 authors = ["Hisbaan Noorani"]
-version = "1.1.0"
+version = "1.1.1"
 edition = "2021"
 license = "GPL-3.0"
-description = "A cli spelling corrector"
+description = "A CLI spelling corrector"
 documentation = "https://github.com/hisbaan/didyoumean"
 homepage = "https://github.com/hisbaan/didyoumean"
 repository = "https://github.com/hisbaan/didyoumean"
 readme = "docs/README.md"
-keywords = ["levenshtein", "damerau", "edit-distance"]
+keywords = ["levenshtein", "damerau", "edit-distance", "spelling"]
 categories = ["command-line-utilities"]
 
 [[bin]]
@@ -17,7 +17,7 @@ name = "dym"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "3.1.8", features = ["derive"] }
+clap = { version = "3.1.10", features = ["derive"] }
 colored = { version = "2" }
 cli-clipboard = {version = "0.2.1"}
 dialoguer = {version = "0.10.0"}
@@ -27,7 +27,7 @@ atty = { version = "0.2.14" }
 nix = { version = "0.23.1" }
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.3.5"
 
 [[bench]]
 name = "edit_distance"
