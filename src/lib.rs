@@ -109,9 +109,9 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 /// ```
 pub fn edit_distance(search_chars: &Vec<char>, known_term: &str) -> usize {
     // Set local constants for repeated use later.
-    let n = search_chars.len() + 1;
-    let m = known_term.len() + 1;
     let known_chars: Vec<char> = known_term.chars().collect();
+    let n = search_chars.iter().count() + 1;
+    let m = known_chars.iter().count() + 1;
 
     // Setup matrix 2D vector.
     let mut mat = vec![0; m * n];
@@ -126,10 +126,10 @@ pub fn edit_distance(search_chars: &Vec<char>, known_term: &str) -> usize {
 
     // Run the algorithm.
     for i in 1..n {
-        let search_char_i_minus_one = search_chars[i - 1];
-        let search_char_i_minus_two = if i > 1 { search_chars[i - 2] } else { ' ' };
+        // let search_char_i_minus_one = search_chars[i - 1];
+        // let search_char_i_minus_two = if i > 1 { search_chars[i - 2] } else { ' ' };
         for j in 1..m {
-            let sub_cost = if search_char_i_minus_one == known_chars[j - 1] {
+            let sub_cost = if search_chars[i - 1] == known_chars[j - 1] {
                 0
             } else {
                 1
@@ -144,8 +144,8 @@ pub fn edit_distance(search_chars: &Vec<char>, known_term: &str) -> usize {
             );
             if i > 1
                 && j > 1
-                && search_char_i_minus_one == known_chars[j - 2]
-                && search_char_i_minus_two == known_chars[j - 1]
+                && search_chars[i - 1] == known_chars[j - 2]
+                && search_chars[i - 2] == known_chars[j - 1]
             {
                 mat[i * m + j] = min(
                     mat[i * m + j],

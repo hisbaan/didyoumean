@@ -19,6 +19,7 @@ use didyoumean::{edit_distance, insert_and_shift, yank};
 
 static LOCALES: phf::Map<&'static str, &'static str> = phf_map! {
     "af" => "Afrikaans",
+    "az" => "Azerbaijani",
     "sq" => "Albanian",
     "ar" => "Arabic",
     "eu" => "Basque",
@@ -83,6 +84,11 @@ static LOCALES: phf::Map<&'static str, &'static str> = phf_map! {
 
 static SUPPORTED_LANGS: phf::Map<&'static str, &'static str> = phf_map! {
     "en" => "English",
+    "es" => "Spanish",
+    // "de" => "German",
+    "el" => "Greek",
+    // "cy" => "Welsh",
+    "fr" => "French",
 };
 
 // Parse command line arguments to get the search term.
@@ -114,11 +120,10 @@ struct Cli {
         default_value = "en"
     )]
     lang: String,
-    #[clap(
-        long = "print-supported-langs",
-        help = "Display a list of supported languages"
-    )]
+    #[clap(long = "print-langs", help = "Display a list of supported languages")]
     print_langs: bool,
+    #[clap(long = "update-langs", help = "Update all language files")]
+    update_langs: bool,
 }
 
 fn main() {
@@ -140,8 +145,7 @@ fn run_app() -> std::result::Result<(), Error> {
     // Parse args using clap.
     let args = Cli::parse();
 
-    let mut search_term = String::new();
-
+    // Print all supported languages.
     if args.print_langs {
         println!("Supported Languages:");
         for key in SUPPORTED_LANGS.keys() {
@@ -149,6 +153,14 @@ fn run_app() -> std::result::Result<(), Error> {
         }
         std::process::exit(0);
     }
+
+    // Update all downloaded languages.
+    if args.update_langs {
+        update_langs();
+        std::process::exit(0);
+    }
+
+    let mut search_term = String::new();
 
     // Check if nothing was passed in as the search term.
     if args.search_term == None {
@@ -173,41 +185,32 @@ fn run_app() -> std::result::Result<(), Error> {
         search_term = args.search_term.unwrap();
     }
 
-    match args.lang.as_str() {
-        "en" => {
-            // English word list
-            fetch_word_list(
-                args.lang.to_owned(),
-                format!(
-                    "https://raw.githubusercontent.com/hisbaan/wordlists/main/{}",
-                    args.lang.to_owned(),
-                ),
-            );
-        }
-        _ => {
-            // Not supported
-            // Initialize new command.
-            let mut cmd = clap::Command::new("dym [OPTIONS] <SEARCH_TERM>");
+    if SUPPORTED_LANGS.contains_key(args.lang.as_str()) {
+        fetch_word_list(args.lang.to_owned());
+    } else {
+        // Not supported
+        // Initialize new command.
+        let mut cmd = clap::Command::new("dym [OPTIONS] <SEARCH_TERM>");
 
-            // Whether or not locale code is valid.
-            let error_string = if LOCALES.contains_key(args.lang.as_str()) {
-                format!(
-                    "There is currently no word list for {}",
-                    LOCALES.get(args.lang.as_str()).cloned().unwrap()
-                )
-            } else {
-                format!("{} is not a recognized localed code", args.lang)
-            };
+        // Whether or not locale code is valid.
+        let error_string = if LOCALES.contains_key(args.lang.as_str()) {
+            format!(
+                "There is currently no word list for {}",
+                LOCALES.get(args.lang.as_str()).cloned().unwrap()
+            )
+        } else {
+            format!("{} is not a recognized localed code", args.lang)
+        };
 
-            // Set error.
-            let error = cmd.error(clap::ErrorKind::MissingRequiredArgument, error_string);
+        // Set error.
+        let error = cmd.error(clap::ErrorKind::MissingRequiredArgument, error_string);
 
-            // Exit with error.
-            clap::Error::exit(&error);
-        }
+        // Exit with error.
+        clap::Error::exit(&error);
     }
 
     // Get word list. The program will only get here if/when this is a valid word list.
+    // TODO figure out non utf-8 chars
     let word_list =
         fs::read_to_string(dirs::data_dir().unwrap().join("didyoumean").join(args.lang))
             .expect("Error reading file");
@@ -313,40 +316,51 @@ fn run_app() -> std::result::Result<(), Error> {
 }
 
 /// Fetch the word list specified by `lang` from https://github.com/hisbaan/wordlists
+///
+/// # Arguments
+///
+/// * `lang` - A locale code string to define the word list file to fetch.
 #[tokio::main]
-async fn fetch_word_list(lang: String, url: String) {
+async fn fetch_word_list(lang: String) {
+    // Get data directory.
     let data_dir = dirs::data_dir().unwrap().join("didyoumean");
 
+    // Create data directory if it doesn't exist.
     if !data_dir.is_dir() {
         std::fs::create_dir(data_dir).expect("Failed to create data directory");
     }
 
-    let file_path = dirs::data_dir()
-        .unwrap()
-        .join("didyoumean")
-        .join(lang.to_owned());
+    // Get file path.
+    let file_path = dirs::data_dir().unwrap().join("didyoumean").join(&lang);
 
+    // If the file does not exist, fetch it from the server.
     if !file_path.is_file() {
         println!(
-            "Downloading word list for {}...",
-            lang.to_string().blue()
+            "Downloading {} word list...",
+            LOCALES.get(&lang).unwrap().to_string().blue()
         );
 
-        // Setup Reqwest
-        let response = reqwest::get(url.to_owned()).await.expect("Request failed");
+        let url = format!(
+            "https://raw.githubusercontent.com/hisbaan/wordlists/main/{}",
+            &lang
+        );
+
+        // Setup reqwest.
+        let response = reqwest::get(&url).await.expect("Request failed");
         let total_size = response.content_length().unwrap();
-
-        // Setup indicatif
-        let pb = ProgressBar::new(total_size);
-        pb.set_style(ProgressStyle::default_bar()
-            .template("[{elapsed_precise}] [{wide_bar:.blue/cyan}] {bytes}/{total_bytes} ({eta})")
-            .progress_chars("#>-")
-        );
-
-        // Setup file and stream.
         let mut file = std::fs::File::create(file_path).expect("Failed to create file");
         let mut downloaded: u64 = 0;
         let mut stream = response.bytes_stream();
+
+        // Setup indicatif.
+        let pb = ProgressBar::new(total_size);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template(
+                    "[{elapsed_precise}] [{wide_bar:.blue/cyan}] {bytes}/{total_bytes} ({eta})",
+                )
+                .progress_chars("#>-"),
+        );
 
         // Read from stream into file.
         while let Some(item) = stream.next().await {
@@ -359,5 +373,31 @@ async fn fetch_word_list(lang: String, url: String) {
 
         // Print completed bar.
         pb.finish_at_current_pos();
+    }
+}
+
+/// Update the word list files by deleting and downloading the files from the repository.
+fn update_langs() {
+    let data_dir = dirs::data_dir().unwrap().join("didyoumean");
+
+    // Create data directory if it doesn't exist.
+    if !data_dir.is_dir() {
+        std::fs::create_dir(&data_dir).expect("Failed to create data directory");
+    }
+
+    // Get files in data directory.
+    let data_dir_files = std::fs::read_dir(&data_dir).unwrap();
+
+    // Delete and update all files.
+    for file in data_dir_files {
+        let file_name = file.unwrap().file_name();
+        let string: &str = file_name.to_str().unwrap();
+
+        // Only delete and download if the language is supported.
+        if SUPPORTED_LANGS.contains_key(&string) {
+            std::fs::remove_file(data_dir.join(&string))
+                .expect("Failed to update file (deletion failed)");
+            fetch_word_list(string.to_string());
+        }
     }
 }
