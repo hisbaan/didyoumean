@@ -1,4 +1,5 @@
 pub mod lib;
+pub mod langs;
 
 use clap::Parser;
 use colored::*;
@@ -6,7 +7,6 @@ use dialoguer::{theme::ColorfulTheme, Select};
 use dirs;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use phf::phf_map;
 use reqwest;
 use std::{
     cmp::min,
@@ -15,81 +15,8 @@ use std::{
 };
 use tokio;
 
-use didyoumean::{edit_distance, insert_and_shift, yank};
-
-static LOCALES: phf::Map<&'static str, &'static str> = phf_map! {
-    "af" => "Afrikaans",
-    "az" => "Azerbaijani",
-    "sq" => "Albanian",
-    "ar" => "Arabic",
-    "eu" => "Basque",
-    "be" => "Belarusian",
-    "bg" => "Bulgarian",
-    "ca" => "Catalan",
-    "zh" => "Chinese",
-    "hr" => "Croatian",
-    "cs" => "Czech",
-    "da" => "Danish",
-    "nl" => "Dutch",
-    "en" => "English",
-    "et" => "Estonian",
-    "fo" => "Faeroese",
-    "fa" => "Farsi",
-    "fi" => "Finnish",
-    "fr" => "French",
-    "gd" => "Gaelic",
-    "de" => "German",
-    "el" => "Greek",
-    "he" => "Hebrew",
-    "hi" => "Hindi",
-    "hu" => "Hungarian",
-    "is" => "Icelandic",
-    "id" => "Indonesian",
-    "ga" => "Irish",
-    "it" => "Italian",
-    "ja" => "Japanese",
-    "ko" => "Korean",
-    "lv" => "Latvian",
-    "lt" => "Lithuanian",
-    "mk" => "Macedonian",
-    "ml" => "Malalyalam",
-    "ms" => "Malaysian",
-    "mt" => "Maltese",
-    "no" => "Norwegian",
-    "pl" => "Polish",
-    "pt" => "Portugese",
-    "pa" => "Punjabi",
-    "rm" => "Rhaeto-Romanic",
-    "ro" => "Romanian",
-    "ru" => "Russian",
-    "sr" => "Serbian",
-    "sk" => "Slovak",
-    "sl" => "Slovenian",
-    "sb" => "Sorbian",
-    "es" => "Spanish",
-    "sv" => "Swedish",
-    "th" => "Thai",
-    "ts" => "Tsonga",
-    "tn" => "Tswana",
-    "tr" => "Turkish",
-    "ua" => "Ukranian",
-    "ur" => "Urdu",
-    "ve" => "Venda",
-    "vi" => "Vietnamese",
-    "cy" => "Welsh",
-    "xh" => "Xhosa",
-    "ji" => "Yiddish",
-    "zu" => "Zulu",
-};
-
-static SUPPORTED_LANGS: phf::Map<&'static str, &'static str> = phf_map! {
-    "cy" => "Welsh",
-    "de" => "German",
-    "el" => "Greek",
-    "en" => "English",
-    "es" => "Spanish",
-    "fr" => "French",
-};
+use lib::{edit_distance, insert_and_shift, yank};
+use langs::{LOCALES, SUPPORTED_LANGS};
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
