@@ -83,11 +83,11 @@ static LOCALES: phf::Map<&'static str, &'static str> = phf_map! {
 };
 
 static SUPPORTED_LANGS: phf::Map<&'static str, &'static str> = phf_map! {
+    "cy" => "Welsh",
+    "de" => "German",
+    "el" => "Greek",
     "en" => "English",
     "es" => "Spanish",
-    // "de" => "German",
-    "el" => "Greek",
-    // "cy" => "Welsh",
     "fr" => "French",
 };
 
@@ -148,9 +148,19 @@ fn run_app() -> std::result::Result<(), Error> {
     // Print all supported languages.
     if args.print_langs {
         println!("Supported Languages:");
+        let mut langs: Vec<String> = vec![];
+
+        // Add words to vector.
         for key in SUPPORTED_LANGS.keys() {
-            println!(" - {}: {}", key, SUPPORTED_LANGS.get(key).clone().unwrap());
+            langs.push(format!(" - {}: {}", key, SUPPORTED_LANGS.get(key).clone().unwrap()));
         }
+
+        // Sort and print vector.
+        langs.sort();
+        for lang in langs {
+            println!("{}", lang);
+        }
+
         std::process::exit(0);
     }
 
