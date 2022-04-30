@@ -1,5 +1,5 @@
-pub mod lib;
 pub mod langs;
+pub mod lib;
 
 use clap::Parser;
 use colored::*;
@@ -15,8 +15,8 @@ use std::{
 };
 use tokio;
 
-use lib::{edit_distance, insert_and_shift, yank};
 use langs::{LOCALES, SUPPORTED_LANGS};
+use lib::{edit_distance, insert_and_shift, yank};
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
@@ -79,7 +79,11 @@ fn run_app() -> std::result::Result<(), Error> {
 
         // Add words to vector.
         for key in SUPPORTED_LANGS.keys() {
-            langs.push(format!(" - {}: {}", key, SUPPORTED_LANGS.get(key).clone().unwrap()));
+            langs.push(format!(
+                " - {}: {}",
+                key,
+                SUPPORTED_LANGS.get(key).clone().unwrap()
+            ));
         }
 
         // Sort and print vector.
@@ -147,7 +151,6 @@ fn run_app() -> std::result::Result<(), Error> {
     }
 
     // Get word list. The program will only get here if/when this is a valid word list.
-    // TODO figure out non utf-8 chars
     let word_list =
         fs::read_to_string(dirs::data_dir().unwrap().join("didyoumean").join(args.lang))
             .expect("Error reading file");
