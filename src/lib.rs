@@ -38,7 +38,7 @@ pub fn yank(string: &str) {
 
                 // Keep the process running until the clipboard changes.
                 loop {
-                    let clipboard = format!("{}", ctx.get_contents().unwrap());
+                    let clipboard = ctx.get_contents().unwrap();
                     std::thread::sleep(std::time::Duration::from_secs(1));
                     if clipboard != string {
                         std::process::exit(0);
@@ -107,7 +107,8 @@ pub fn insert_and_shift<T: Copy>(list: &mut Vec<T>, index: usize, element: T) {
 /// assert_eq!(edit_distance(&"sunday".chars().collect::<Vec<_>>(), "saturday"), 3);
 /// assert_eq!(edit_distance(&"tset".chars().collect::<Vec<_>>(), "test"), 1);
 /// ```
-pub fn edit_distance(search_chars: &Vec<char>, known_term: &str) -> usize {
+#[allow(clippy::iter_count, clippy::needless_range_loop)]
+pub fn edit_distance(search_chars: &[char], known_term: &str) -> usize {
     // Set local constants for repeated use later.
     let known_chars: Vec<char> = known_term.chars().collect();
     let n = search_chars.iter().count() + 1;

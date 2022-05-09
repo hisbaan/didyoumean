@@ -4,16 +4,16 @@ pub mod lib;
 use clap::Parser;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
-use dirs;
+use dirs::data_dir;
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
-use reqwest;
+use reqwest::get;
 use std::{
     cmp::min,
-    fs,
+    fs::{create_dir, read_dir, read_to_string, remove_file, File},
     io::{self, BufRead, Error, Write},
 };
-use tokio;
+// use tokio;
 
 use langs::{LOCALES, SUPPORTED_LANGS};
 use lib::{edit_distance, insert_and_shift, yank};
@@ -79,11 +79,7 @@ fn run_app() -> std::result::Result<(), Error> {
 
         // Add words to vector.
         for key in SUPPORTED_LANGS.keys() {
-            langs.push(format!(
-                " - {}: {}",
-                key,
-                SUPPORTED_LANGS.get(key).clone().unwrap()
-            ));
+            langs.push(format!(" - {}: {}", key, SUPPORTED_LANGS.get(key).unwrap()));
         }
 
         // Sort and print vector.
@@ -151,9 +147,8 @@ fn run_app() -> std::result::Result<(), Error> {
     }
 
     // Get word list. The program will only get here if/when this is a valid word list.
-    let word_list =
-        fs::read_to_string(dirs::data_dir().unwrap().join("didyoumean").join(args.lang))
-            .expect("Error reading file");
+    let word_list = read_to_string(dirs::data_dir().unwrap().join("didyoumean").join(args.lang))
+        .expect("Error reading file");
 
     // Get dictionary of words from words.txt.
     let dictionary = word_list.split('\n');
@@ -200,7 +195,7 @@ fn run_app() -> std::result::Result<(), Error> {
         }
 
         // Add words in order of edit distance.
-        output.push_str(&top_n_words[i]);
+        output.push_str(top_n_words[i]);
 
         // Add edit distance if verbose.
         if args.verbose {
@@ -267,7 +262,7 @@ async fn fetch_word_list(lang: String) {
 
     // Create data directory if it doesn't exist.
     if !data_dir.is_dir() {
-        std::fs::create_dir(data_dir).expect("Failed to create data directory");
+        create_dir(data_dir).expect("Failed to create data directory");
     }
 
     // Get file path.
@@ -286,9 +281,9 @@ async fn fetch_word_list(lang: String) {
         );
 
         // Setup reqwest.
-        let response = reqwest::get(&url).await.expect("Request failed");
+        let response = get(&url).await.expect("Request failed");
         let total_size = response.content_length().unwrap();
-        let mut file = std::fs::File::create(file_path).expect("Failed to create file");
+        let mut file = File::create(file_path).expect("Failed to create file");
         let mut downloaded: u64 = 0;
         let mut stream = response.bytes_stream();
 
@@ -318,15 +313,15 @@ async fn fetch_word_list(lang: String) {
 
 /// Update the word list files by deleting and downloading the files from the repository.
 fn update_langs() {
-    let data_dir = dirs::data_dir().unwrap().join("didyoumean");
+    let data = data_dir().unwrap().join("didyoumean");
 
     // Create data directory if it doesn't exist.
-    if !data_dir.is_dir() {
-        std::fs::create_dir(&data_dir).expect("Failed to create data directory");
+    if !data.is_dir() {
+        create_dir(&data).expect("Failed to create data directory");
     }
 
     // Get files in data directory.
-    let data_dir_files = std::fs::read_dir(&data_dir).unwrap();
+    let data_dir_files = read_dir(&data).unwrap();
 
     // Delete and update all files.
     for file in data_dir_files {
@@ -334,9 +329,8 @@ fn update_langs() {
         let string: &str = file_name.to_str().unwrap();
 
         // Only delete and download if the language is supported.
-        if SUPPORTED_LANGS.contains_key(&string) {
-            std::fs::remove_file(data_dir.join(&string))
-                .expect("Failed to update file (deletion failed)");
+        if SUPPORTED_LANGS.contains_key(string) {
+            remove_file(data.join(&string)).expect("Failed to update file (deletion failed)");
             fetch_word_list(string.to_string());
         }
     }
