@@ -180,6 +180,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap_complete"
+version = "3.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da92e6facd8d73c22745a5d3cbb59bdf8e46e3235c923e516527d8e81eec14a4"
+dependencies = [
+ "clap 3.1.17",
+]
+
+[[package]]
 name = "clap_derive"
 version = "3.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -199,6 +208,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a37c35f1112dad5e6e0b1adaff798507497a18fceeb30cceb3bae7d1427b9213"
 dependencies = [
  "os_str_bytes",
+]
+
+[[package]]
+name = "clap_mangen"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca2ff85c3fa1e7c1a4229f7b4221f769757c3982e2afd3e6d9381d59db2c7e61"
+dependencies = [
+ "clap 3.1.17",
+ "roff",
 ]
 
 [[package]]
@@ -429,6 +448,8 @@ version = "1.1.2"
 dependencies = [
  "atty",
  "clap 3.1.17",
+ "clap_complete",
+ "clap_mangen",
  "cli-clipboard",
  "colored",
  "criterion",
@@ -1505,6 +1526,12 @@ dependencies = [
  "web-sys",
  "winreg",
 ]
+
+[[package]]
+name = "roff"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b833d8d034ea094b1ea68aa6d5c740e0d04bad9d16568d08ba6f76823a114316"
 
 [[package]]
 name = "rustc-demangle"

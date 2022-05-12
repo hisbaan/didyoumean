@@ -1,3 +1,4 @@
+pub mod cli;
 pub mod langs;
 pub mod lib;
 
@@ -13,45 +14,10 @@ use std::{
     fs::{create_dir, read_dir, read_to_string, remove_file, File},
     io::{self, BufRead, Error, Write},
 };
-// use tokio;
 
+use cli::Cli;
 use langs::{LOCALES, SUPPORTED_LANGS};
 use lib::{edit_distance, insert_and_shift, yank};
-
-// Parse command line arguments to get the search term.
-#[derive(Parser)]
-#[clap(author = "Hisbaan Noorani", version = "1.1.1", about = "Did You Mean: A cli spelling corrector", long_about = None)]
-struct Cli {
-    search_term: Option<String>,
-    #[clap(
-        short = 'n',
-        long = "number",
-        default_value_t = 5,
-        help = "Change the number of matches printed"
-    )]
-    number: usize,
-    #[clap(short = 'c', long = "clean-output", help = "Print clean output")]
-    clean_output: bool,
-    #[clap(short = 'v', long = "verbose", help = "Print verbose output")]
-    verbose: bool,
-    #[clap(
-        short = 'y',
-        long = "yank",
-        help = "Yank (copy) to the system cliboard"
-    )]
-    yank: bool,
-    #[clap(
-        short = 'l',
-        long = "lang",
-        help = "Select the desired language using the locale code (en, fr, sp, etc.)",
-        default_value = "en"
-    )]
-    lang: String,
-    #[clap(long = "print-langs", help = "Display a list of supported languages")]
-    print_langs: bool,
-    #[clap(long = "update-langs", help = "Update all language files")]
-    update_langs: bool,
-}
 
 fn main() {
     std::process::exit(match run_app() {

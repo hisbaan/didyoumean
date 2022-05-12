@@ -29,6 +29,11 @@ tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 futures-util = "0.3.21"
 phf = { version = "0.10", features = ["macros"] }
 
+[build-dependencies]
+clap_complete = { version = "3.1.4" }
+clap_mangen = { version = "0.1.6" }
+clap = { version = "3.1.10", features = ["derive"] }
+
 [target.'cfg(unix)'.dependencies]
 nix = { version = "0.23.1" }
 

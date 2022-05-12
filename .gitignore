@@ -33,3 +33,7 @@ target/
 *.pdb
 
 # End of https://www.toptal.com/developers/gitignore/api/rust,linux
+
+# start of personal gitignore
+completions/
+man/
