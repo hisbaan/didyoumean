@@ -2,7 +2,7 @@ use clap::Parser;
 
 // Parse command line arguments to get the search term.
 #[derive(Parser)]
-#[clap(author = "Hisbaan Noorani", version = "1.1.1", about = "Did You Mean: A cli spelling corrector", long_about = None)]
+#[clap(author = "Hisbaan Noorani", version = "1.1.3", about = "Did You Mean: A cli spelling corrector", long_about = None)]
 pub struct Cli {
     pub search_term: Option<String>,
     #[clap(
