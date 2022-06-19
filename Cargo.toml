@@ -17,25 +17,25 @@ name = "dym"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "3.1.10", features = ["derive"] }
-colored = { version = "2" }
-cli-clipboard = {version = "0.2.1"}
-dialoguer = {version = "0.10.0"}
-indicatif = { version = "0.16.2" }
-atty = { version = "0.2.14" }
-dirs = { version = "4.0.0" }
-reqwest = { version = "0.11.10", features = ["stream"] }
-tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
+clap = { version = "3.2.5", features = ["derive"] }
+colored = "2.0.0"
+cli-clipboard = "0.2.1"
+dialoguer = "0.10.1"
+indicatif = "0.16.2"
+atty = "0.2.14"
+dirs = "4.0.0"
+reqwest = { version = "0.11.11", features = ["stream"] }
+tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
 futures-util = "0.3.21"
-phf = { version = "0.10", features = ["macros"] }
+phf = { version = "0.10.1", features = ["macros"] }
 
 [build-dependencies]
-clap_complete = { version = "3.1.4" }
-clap_mangen = { version = "0.1.6" }
-clap = { version = "3.1.10", features = ["derive"] }
+clap_complete = "3.2.1"
+clap_mangen = "0.1.8"
+clap = { version = "3.2.5", features = ["derive"] }
 
 [target.'cfg(unix)'.dependencies]
-nix = { version = "0.23.1" }
+nix = "0.24.1"
 
 [dev-dependencies]
 criterion = "0.3.5"
