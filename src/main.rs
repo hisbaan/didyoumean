@@ -144,6 +144,9 @@ fn run_app() -> std::result::Result<(), Error> {
 
     // Print out results.
     if !args.clean_output {
+        if top_n_dists[0] == 0 {
+            println!("{} is spelled correctly\n", search_term.bold().green());
+        }
         println!("{}", "Did you mean?".blue().bold());
     }
     let mut items = vec!["".to_string(); args.number];
