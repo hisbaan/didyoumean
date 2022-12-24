@@ -1,6 +1,5 @@
 pub mod cli;
 pub mod langs;
-pub mod lib;
 
 use clap::Parser;
 use colored::*;
@@ -16,8 +15,8 @@ use std::{
 };
 
 use cli::Cli;
+use didyoumean::{edit_distance, insert_and_shift, yank};
 use langs::{LOCALES, SUPPORTED_LANGS};
-use lib::{edit_distance, insert_and_shift, yank};
 
 fn main() {
     std::process::exit(match run_app() {
