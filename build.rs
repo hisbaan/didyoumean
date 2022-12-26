@@ -3,7 +3,6 @@ use clap_complete::{
     generate_to,
     Shell::{Bash, Elvish, Fish, PowerShell, Zsh},
 };
-use clap_mangen;
 
 // Include the Cli struct.
 include!("src/cli.rs");
