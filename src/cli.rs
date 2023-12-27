@@ -51,7 +51,15 @@ pub struct Cli {
     #[clap(
         long = "update-langs",
         help = "Update all language files",
-        long_help = "Update all language files from the repository https://github.com/hisbaan/wordlists."
+        long_help = "Update all language files from the repository specified by CLI @wordlist-url@."
     )]
     pub update_langs: bool,
+    #[clap(
+        short = 'w',
+        long = "wordlist-url",
+        help = "Wordlist repository URL",
+        long_help = "Wordlist repository URL. The default value is 'https://raw.githubusercontent.com/hisbaan/wordlists/main'",
+        default_value = "https://raw.githubusercontent.com/hisbaan/wordlists/main"
+    )]
+    pub wordlist_url: String,
 }

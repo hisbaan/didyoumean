@@ -17,6 +17,7 @@ pub fn yank(string: &str) {
         "freebsd",
         "netbsd",
         "dragonfly",
+        "mac osx",
         "netbsd",
         "openbsd",
         "solaris",
