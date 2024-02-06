@@ -1,0 +1,32 @@
+name: build-package
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+    branches: [main]
+env:
+  CARGO_TERM_COLOR: always
+  RUSTUP_TOOLCHAIN: stable
+  CARGO_TARGET_DIR: target
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --locked --release
+      - name: Strip binary
+        run: strip target/release/dym
+      - name: Move the binary
+        run: cp target/release/dym .
+      - name: Create TAR package
+        run: tar -czvf dym-$(target/release/dym --version | cut -d ' ' -f 2)-x86_64-${{ matrix.os == 'macos-latest' && 'apple-darwin' || 'linux-gnu' }}.tar.gz completions docs man dym
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dym-$(target/release/dym --version | cut -d ' ' -f 2)-x86_64-${{ matrix.os == 'macos-latest' && 'apple-darwin' || 'linux-gnu' }}.tar.gz
