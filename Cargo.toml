@@ -17,28 +17,29 @@ name = "dym"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "3.2.5", features = ["derive"] }
-colored = "2.0.0"
-cli-clipboard = "0.2.1"
-dialoguer = "0.10.1"
-indicatif = "0.16.2"
+clap = { version = "4.4.18", features = ["derive"] }
+colored = "2.1.0"
+cli-clipboard = "0.4.0"
+dialoguer = "0.11.0"
+indicatif = "0.17.7"
 atty = "0.2.14"
-dirs = "4.0.0"
-reqwest = { version = "0.11.11", features = ["stream"] }
-tokio = { version = "1.20.4", features = ["macros", "rt-multi-thread"] }
-futures-util = "0.3.21"
-phf = { version = "0.10.1", features = ["macros"] }
+dirs = "5.0.1"
+reqwest = { version = "0.11.24", features = ["stream"] }
+tokio = { version = "1.36.0", features = ["macros", "rt-multi-thread"] }
+futures-util = "0.3.30"
+phf = { version = "0.11.2", features = ["macros"] }
+nix = { version = "0.27.1", features = ["process"] }
 
 [build-dependencies]
-clap_complete = "3.2.1"
-clap_mangen = "0.1.8"
-clap = { version = "3.2.5", features = ["derive"] }
+clap_complete = "4.4.10"
+clap_mangen = "0.2.19"
+clap = { version = "4.4.18", features = ["derive"] }
 
 [target.'cfg(unix)'.dependencies]
-nix = "0.24.1"
+nix = "0.27.1"
 
 [dev-dependencies]
-criterion = "0.3.5"
+criterion = "0.5.1"
 
 [[bench]]
 name = "edit_distance"

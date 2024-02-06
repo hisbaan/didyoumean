@@ -2,6 +2,7 @@ pub mod cli;
 pub mod langs;
 
 use clap::Parser;
+use clap::error::ErrorKind;
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
 use dirs::data_dir;
@@ -70,7 +71,7 @@ fn run_app() -> std::result::Result<(), Error> {
         if atty::is(atty::Stream::Stdin) {
             let mut cmd = clap::Command::new("dym [OPTIONS] <SEARCH_TERM>");
             let error = cmd.error(
-                clap::ErrorKind::MissingRequiredArgument,
+                ErrorKind::MissingRequiredArgument,
                 format!(
                     "The {} argument was not provided.\n\n\tEither provide it as an argument or pass it in from standard input.",
                     "<SEARCH_TERM>".green()
@@ -105,7 +106,7 @@ fn run_app() -> std::result::Result<(), Error> {
         };
 
         // Set error.
-        let error = cmd.error(clap::ErrorKind::MissingRequiredArgument, error_string);
+        let error = cmd.error(ErrorKind::MissingRequiredArgument, error_string);
 
         // Exit with error.
         clap::Error::exit(&error);
@@ -186,7 +187,8 @@ fn run_app() -> std::result::Result<(), Error> {
         let chosen = Select::with_theme(&ColorfulTheme::default())
             .items(&items)
             .default(0)
-            .interact_opt()?;
+            .interact_opt()
+            .unwrap();
 
         // Print out items since dialoguer clears.
         for item in items {
@@ -262,6 +264,7 @@ async fn fetch_word_list(lang: String) {
                 .template(
                     "[{elapsed_precise}] [{wide_bar:.blue/cyan}] {bytes}/{total_bytes} ({eta})",
                 )
+                .unwrap()
                 .progress_chars("#>-"),
         );
 
@@ -275,7 +278,7 @@ async fn fetch_word_list(lang: String) {
         }
 
         // Print completed bar.
-        pb.finish_at_current_pos();
+        pb.finish();
     }
 }
 

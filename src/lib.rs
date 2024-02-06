@@ -26,7 +26,7 @@ pub fn yank(string: &str) {
         // The platform is linux/*bsd and is likely using X11 or Wayland.
         // There is a fix needed for clipboard use in cases like these.
         // The clipboard is cleared on X11/Wayland after the process that set it exist.
-        // To combat this, we will fork and keep a process aroudn until the clipboard
+        // To combat this, we will fork and keep a process around until the clipboard
         // is cleared.
         // Ideally, this wouldn't be an issue but it was a conscious design decision
         // on X11/Wayland
