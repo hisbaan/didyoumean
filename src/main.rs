@@ -249,7 +249,6 @@ async fn fetch_word_list(lang: String, wordlist_url: String) {
         );
 
         let url = format!("{}/{}", wordlist_url, &lang);
-        println!("Accessing URL: {}", url);
         // Setup reqwest.
         let response = get(&url).await.expect("Request failed");
         let total_size = response.content_length().unwrap();
