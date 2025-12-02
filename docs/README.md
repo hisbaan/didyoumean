@@ -66,3 +66,104 @@ cargo run -- <args>
 ```
 
 where `<args>` are the command-line arguments you would pass the DidYouMean binary. Note that this is an unoptimized build contianing debug information so it runs much, much slower.
+Adding New Language
+===================
+Update the language code in the list at 
+
+
+Update the language wordlist
+============================
+```
+$ cargo run -- --lang ta  --update-langs --wordlist-url https://raw.githubusercontent.com/arcturusannamalai/wordlists/main/
+    Finished dev [unoptimized + debuginfo] target(s) in 0.17s
+     Running `target/debug/dym --lang ta --update-langs --wordlist-url 'https://raw.githubusercontent.com/arcturusannamalai/wordlists/main/'`
+Downloading English word list...
+Accessing URL: https://raw.githubusercontent.com/arcturusannamalai/wordlists/main//en
+[00:00:00] [############################################################################################################################] 4.12MiB/4.12MiB (0s)
+Downloading Tamil word list...
+Accessing URL: https://raw.githubusercontent.com/arcturusannamalai/wordlists/main//ta
+[00:00:00] [############################################################################################################################] 1.73MiB/1.73MiB (0s)
+```
+
+Run did you mean:
+================
+e.g.
+```
+cargo run -- --lang ta  கலஅ 
+   Compiling didyoumean v1.1.4 (/Users/user/devel/rust-in-action/didyoumean)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.18s
+     Running `target/debug/dym --lang ta 'கலஅ'`
+Did you mean?
+1. கலி
+2. கலை
+3. கல்
+4. அ
+5. அகல்
+
+```
+
+
+For more info see the help text and options,
+```
+$ cargo run -- --help
+
+didyoumean user$ cargo run -- --help
+   Compiling didyoumean v1.1.4 (/Users/user/devel/rust-in-action/didyoumean)
+    Finished dev [unoptimized + debuginfo] target(s) in 2.24s
+     Running `target/debug/dym --help`
+didyoumean 1.1.4
+Hisbaan Noorani
+Did You Mean: A cli spelling corrector
+
+USAGE:
+    dym [OPTIONS] [SEARCH_TERM]
+
+ARGS:
+    <SEARCH_TERM>
+            
+
+OPTIONS:
+    -c, --clean-output
+            Print a clean version of the output without the title, numbers or colour.
+
+    -h, --help
+            Print help information
+
+    -l, --lang <LANG>
+            Select the desired language using its locale code. For example, English would have the
+            locale code en and French would have the locale code fr. See --print-langs for a list of
+            locale codes and the corresponding languages.
+            
+            [default: en]
+
+    -n, --number <NUMBER>
+            Change the number of words the program will print. The default value is five.
+            
+            [default: 5]
+
+        --print-langs
+            Display a list of supported languages and their respective locale codes.
+
+        --update-langs
+            Update all language files from the repository specified by CLI @wordlist-url@.
+
+    -v, --verbose
+            Print verbose output including the edit distance of the found word to the queried word.
+
+    -V, --version
+            Print version information
+
+    -w, --wordlist-url <WORDLIST_URL>
+            Wordlist repository URL. The default value is
+            'https://raw.githubusercontent.com/hisbaan/wordlists/main'
+            
+            [default: https://raw.githubusercontent.com/hisbaan/wordlists/main]
+
+    -y, --yank
+            Yank (copy) the selected word to the system clipboard. If no word is selected, the
+            clipboard will not be altered.
+
+```
+
+
+
