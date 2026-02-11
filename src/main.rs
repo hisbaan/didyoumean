@@ -59,7 +59,11 @@ fn run_app() -> std::result::Result<(), Error> {
 
     // Update all downloaded languages.
     if args.update_langs {
-        update_langs();
+        assert!(
+            !args.wordlist_url.ends_with("/"),
+            "URL should end with branch name in github without trailing /"
+        );
+        update_langs(args.wordlist_url);
         std::process::exit(0);
     }
 
@@ -89,7 +93,7 @@ fn run_app() -> std::result::Result<(), Error> {
     }
 
     if SUPPORTED_LANGS.contains_key(args.lang.as_str()) {
-        fetch_word_list(args.lang.to_owned());
+        fetch_word_list(args.lang.to_owned(), args.wordlist_url.to_owned());
     } else {
         // Not supported
         // Initialize new command.
@@ -111,14 +115,13 @@ fn run_app() -> std::result::Result<(), Error> {
         // Exit with error.
         clap::Error::exit(&error);
     }
-
     // Get word list. The program will only get here if/when this is a valid word list.
     let word_list = read_to_string(dirs::data_dir().unwrap().join("didyoumean").join(args.lang))
         .expect("Error reading file");
 
     // Get dictionary of words from words.txt.
     let dictionary = word_list.split('\n');
-
+    //assert!(dictionary.clone().count()>20,"Size of wordlist > 20 words");
     // Create mutable vecs for storing the top n words.
     let mut top_n_words = vec![""; args.number];
     let mut top_n_dists = vec![search_term.len() * 10; args.number];
@@ -226,7 +229,7 @@ fn run_app() -> std::result::Result<(), Error> {
 ///
 /// * `lang` - A locale code string to define the word list file to fetch.
 #[tokio::main]
-async fn fetch_word_list(lang: String) {
+async fn fetch_word_list(lang: String, wordlist_url: String) {
     // Get data directory.
     let data_dir = dirs::data_dir().unwrap().join("didyoumean");
 
@@ -245,11 +248,7 @@ async fn fetch_word_list(lang: String) {
             LOCALES.get(&lang).unwrap().to_string().blue()
         );
 
-        let url = format!(
-            "https://raw.githubusercontent.com/hisbaan/wordlists/main/{}",
-            &lang
-        );
-
+        let url = format!("{}/{}", wordlist_url, &lang);
         // Setup reqwest.
         let response = get(&url).await.expect("Request failed");
         let total_size = response.content_length().unwrap();
@@ -283,7 +282,7 @@ async fn fetch_word_list(lang: String) {
 }
 
 /// Update the word list files by deleting and downloading the files from the repository.
-fn update_langs() {
+fn update_langs(wordlist_url: String) {
     let data = data_dir().unwrap().join("didyoumean");
 
     // Create data directory if it doesn't exist.
@@ -302,7 +301,7 @@ fn update_langs() {
         // Only delete and download if the language is supported.
         if SUPPORTED_LANGS.contains_key(string) {
             remove_file(data.join(&string)).expect("Failed to update file (deletion failed)");
-            fetch_word_list(string.to_string());
+            fetch_word_list(string.to_string(), wordlist_url.to_string());
         }
     }
 }
